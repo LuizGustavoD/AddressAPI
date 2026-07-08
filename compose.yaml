@@ -1,0 +1,144 @@
+services:
+
+  api-gateway:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    networks:
+      - public-net
+      - private-net
+
+  db:
+    image: mysql:8.0
+    container_name: auth_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth_db
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - private-net
+
+  auth-server:
+    build:
+      context: ./auth_service/server
+      dockerfile: Dockerfile
+    container_name: auth-server
+    depends_on:
+      db:
+        condition: service_healthy
+      mail-service:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/auth_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JDK_JAVA_OPTIONS=-Djava.net.preferIPv4Stack=true -Dsun.net.inetaddr.ttl=10
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - MAIL_SERVICE_URL=http://mail-service:8081
+      - MAIL_SERVICE_API_KEY=super-secret-mail-api-key
+    networks:
+      - private-net
+
+  mail-service:
+    build:
+      context: ./auth_service/service
+      dockerfile: Dockerfile
+    container_name: mail-service
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/mail_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://auth-server:8080/.well-known/jwks.json
+      - SECURITY_JWT_EXPECTED_ISSUER=auth-service
+      - SECURITY_JWT_EXPECTED_AUDIENCE=mail-service
+      - AUTH_SERVER_URL=http://auth-server:8080
+      - AUTH_SERVER_API_KEY=super-secret-auth-api-key
+      - MAIL_SERVICE_API_KEY=super-secret-mail-api-key
+      - MAIL_SERVICE_ALLOWED_CALLERS=*
+      - SPRING_MAIL_HOST=mailpit
+      - SPRING_MAIL_PORT=1025
+    networks:
+      - private-net
+
+  resource-service:
+    build:
+      context: ./addres_service
+      dockerfile: Dockerfile
+    container_name: resource-service
+    depends_on:
+      db:
+        condition: service_healthy
+      auth-server:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/address_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JDK_JAVA_OPTIONS=-Djava.net.preferIPv4Stack=true -Dsun.net.inetaddr.ttl=10
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://auth-server:8080/.well-known/jwks.json
+      - SECURITY_JWT_EXPECTED_ISSUER=auth-service
+      - SECURITY_JWT_EXPECTED_AUDIENCE=address-service
+    networks:
+      - private-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - private-net
+
+  db_visualizer:
+    image: phpmyadmin:latest
+    container_name: db_visualizer
+    ports:
+      - "8083:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_ABSOLUTE_URI=http://localhost:8083
+    networks:
+      - private-net
+
+  nginx:
+    image: owasp/modsecurity-crs:nginx
+    container_name: nginx_waf
+    ports:
+      - "80:8080"
+    environment:
+      - BACKEND=http://api-gateway:8080
+    volumes:
+      - ./infra/nginx/waf/auth_server.conf:/opt/owasp-crs/rules/auth_server.conf
+      - ./infra/nginx/waf/resurce_server.conf:/opt/owasp-crs/rules/resurce_server.conf
+    depends_on:
+      api-gateway:
+        condition: service_started
+    networks:
+      - public-net
+
+networks:
+  public-net:
+    driver: bridge
+  private-net:
+    driver: bridge

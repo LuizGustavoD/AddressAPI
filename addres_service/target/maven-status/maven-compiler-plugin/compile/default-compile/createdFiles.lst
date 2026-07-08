@@ -1,0 +1,7 @@
+com\address\service\application\response\ResponsePayload.class
+com\address\service\application\response\GlobalExceptionHandler.class
+com\address\service\AddressApplication.class
+com\address\service\application\response\ErrorPayload.class
+com\address\service\infrastructure\security\SecurityConfig.class
+com\address\service\domain\model\Address.class
+com\address\service\infrastructure\http\controller\AddressController.class

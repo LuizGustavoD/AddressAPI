@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmacao de cadastro</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f7fb; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
+	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f4f7fb; margin:0; padding:24px 12px;">
+		<tr>
+			<td align="center">
+				<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px; background-color:#ffffff; border-radius:18px; overflow:hidden; box-shadow:0 12px 40px rgba(15, 23, 42, 0.08);">
+					<tr>
+						<td style="background:linear-gradient(135deg, #0f172a, #1d4ed8); padding:32px 40px; text-align:center;">
+							<p style="margin:0; color:#bfdbfe; font-size:13px; letter-spacing:1.2px; text-transform:uppercase;">Auth Service</p>
+							<h1 style="margin:12px 0 0; color:#ffffff; font-size:30px; line-height:1.2;">Confirme seu cadastro</h1>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:40px;">
+              <p style="margin:0 0 16px; font-size:16px; line-height:1.7;">Ola, <strong>{{username}}</strong>.</p>
+							<p style="margin:0 0 16px; font-size:16px; line-height:1.7;">
+                Recebemos o seu registro e falta apenas uma etapa para ativar sua conta. Clique no botao abaixo para confirmar seu e-mail e concluir o cadastro.
+							</p>
+							<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px auto;">
+								<tr>
+									<td align="center" bgcolor="#2563eb" style="border-radius:10px;">
+										<a href="{{confirmation_link}}" style="display:inline-block; padding:16px 28px; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;">
+											Confirmar cadastro
+										</a>
+									</td>
+								</tr>
+							</table>
+							<p style="margin:0 0 16px; font-size:14px; line-height:1.7; color:#4b5563;">
+                Se o botao nao funcionar, copie e cole este link no navegador:
+							</p>
+							<p style="margin:0 0 24px; font-size:14px; line-height:1.7; word-break:break-word;">
+								<a href="{{confirmation_link}}" style="color:#2563eb; text-decoration:none;">{{confirmation_link}}</a>
+							</p>
+							<div style="padding:20px; border-radius:12px; background-color:#eff6ff; border:1px solid #bfdbfe;">
+								<p style="margin:0 0 10px; font-size:14px; line-height:1.6; color:#1e3a8a; font-weight:bold;">Importante</p>
+								<p style="margin:0; font-size:14px; line-height:1.6; color:#1e40af;">
+                  Se voce nao realizou este cadastro, ignore esta mensagem. Nenhuma acao sera tomada sem a confirmacao do link.
+								</p>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:24px 40px 32px; border-top:1px solid #e5e7eb; background-color:#f8fafc;">
+							<p style="margin:0 0 8px; font-size:13px; line-height:1.6; color:#6b7280;">
+                Esta e uma mensagem automatica. Se precisar, entre em contato com o suporte da plataforma.
+							</p>
+							<p style="margin:0; font-size:12px; line-height:1.6; color:#9ca3af;">
+                Auth Service - Confirmacao de conta
+							</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

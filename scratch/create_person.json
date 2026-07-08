@@ -1,0 +1,19 @@
+{
+  "name": "Luiz Silva",
+  "cpf": "12345678901",
+  "addresses": [
+    {
+      "street": "Rua das Flores",
+      "number": 100,
+      "city": "Sao Paulo",
+      "cep": "01000-000",
+      "state": "SP"
+    }
+  ],
+  "contact": {
+    "userId": "b7464162-c0a9-4cad-a9f0-b1304485f416",
+    "name": "Luiz Contact",
+    "email": "luizcontact@example.com",
+    "phone": "11999999999"
+  }
+}
